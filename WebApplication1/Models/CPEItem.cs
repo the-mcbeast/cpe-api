@@ -20,8 +20,9 @@ namespace CPEApi.Models
         public string? Target_hw { get; set; }
         public string? Other { get; set; }
 
-        public float? QueryScore { get; set; }
-        
+        public float? LocalQueryScore { get; set; }
+        public float? GlobalQueryScore { get; set; }
+
     }
 }
 

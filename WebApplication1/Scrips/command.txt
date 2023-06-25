@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext Name=ConnectionStrings:Context Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context Context -Namespace CPEApi.Models  -Force

@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddDbContext<CPEContext>(opt =>
     opt.UseInMemoryDatabase("CPEList"));
+builder.Services.AddControllers();
+builder.Services.AddDbContext<Context>(opt =>
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("Context")));
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CPEApi", Version = "v1" });
@@ -33,3 +37,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

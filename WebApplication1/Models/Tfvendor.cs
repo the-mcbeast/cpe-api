@@ -6,7 +6,7 @@ namespace CPEApi.Models
     public partial class Tfvendor
     {
         public int Id { get; set; }
-        public string Term { get; set; } = null!;
+        public string? Term { get; set; }
         public int RawCount { get; set; }
         public float? TermFrequency { get; set; }
         public float? LogNormalized { get; set; }

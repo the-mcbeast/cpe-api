@@ -11,15 +11,19 @@ namespace CPEApi.Models
         {
         }
 
-        public Context(DbContextOptions<Context> options)
+        public Context(DbContextOptions options)
             : base(options)
         {
         }
 
+        public virtual DbSet<Anfragen> Anfragens { get; set; } = null!;
+        public virtual DbSet<Antworten> Antwortens { get; set; } = null!;
+        public virtual DbSet<Antworten2> Antworten2s { get; set; } = null!;
         public virtual DbSet<Cpe> Cpes { get; set; } = null!;
         public virtual DbSet<Tfproduct> Tfproducts { get; set; } = null!;
         public virtual DbSet<Tftitle> Tftitles { get; set; } = null!;
         public virtual DbSet<Tfvendor> Tfvendors { get; set; } = null!;
+        public virtual DbSet<Typ> Typs { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -31,6 +35,73 @@ namespace CPEApi.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Anfragen>(entity =>
+            {
+                entity.ToTable("Anfragen");
+
+                entity.Property(e => e.Created).HasColumnType("datetime");
+
+                entity.Property(e => e.Part).HasMaxLength(100);
+
+                entity.Property(e => e.Product).HasMaxLength(100);
+
+                entity.Property(e => e.Vendor).HasMaxLength(100);
+
+                entity.Property(e => e.Version).HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<Antworten>(entity =>
+            {
+                entity.ToTable("Antworten");
+
+                entity.Property(e => e.Cpeid).HasColumnName("CPEId");
+
+                entity.Property(e => e.Created).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Anfrage)
+                    .WithMany(p => p.Antwortens)
+                    .HasForeignKey(d => d.AnfrageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Antworten_Anfrage");
+
+                entity.HasOne(d => d.Cpe)
+                    .WithMany(p => p.Antwortens)
+                    .HasForeignKey(d => d.Cpeid)
+                    .HasConstraintName("FK_CPE_Anfrage");
+
+                entity.HasOne(d => d.TypNavigation)
+                    .WithMany(p => p.Antwortens)
+                    .HasForeignKey(d => d.Typ)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Antwort_Typ");
+            });
+
+            modelBuilder.Entity<Antworten2>(entity =>
+            {
+                entity.ToTable("Antworten2");
+
+                entity.Property(e => e.Cpeid).HasColumnName("CPEId");
+
+                entity.Property(e => e.Created).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Anfrage)
+                    .WithMany(p => p.Antworten2s)
+                    .HasForeignKey(d => d.AnfrageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Antworten2_Anfrage");
+
+                entity.HasOne(d => d.Cpe)
+                    .WithMany(p => p.Antworten2s)
+                    .HasForeignKey(d => d.Cpeid)
+                    .HasConstraintName("FK_Antworten2_CPE");
+
+                entity.HasOne(d => d.TypNavigation)
+                    .WithMany(p => p.Antworten2s)
+                    .HasForeignKey(d => d.Typ)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Antworten2_Typ");
+            });
+
             modelBuilder.Entity<Cpe>(entity =>
             {
                 entity.ToTable("CPEs");
@@ -73,8 +144,6 @@ namespace CPEApi.Models
             modelBuilder.Entity<Tfproduct>(entity =>
             {
                 entity.ToTable("TFProduct");
-
-                entity.HasIndex(e => e.Term, "indexterm");
 
                 entity.Property(e => e.DoubleNormalized).HasColumnName("doubleNormalized");
 
@@ -133,6 +202,13 @@ namespace CPEApi.Models
                 entity.Property(e => e.TfIdfLogNorm).HasColumnName("tfIdfLogNorm");
 
                 entity.Property(e => e.TfIdfdoubleNorm).HasColumnName("tfIdfdoubleNorm");
+            });
+
+            modelBuilder.Entity<Typ>(entity =>
+            {
+                entity.ToTable("Typ");
+
+                entity.Property(e => e.Name).HasMaxLength(100);
             });
 
             OnModelCreatingPartial(modelBuilder);

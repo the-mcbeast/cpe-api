@@ -6,7 +6,6 @@ namespace CPEApi.Models
         public int Id { get; set; }
         public string? CpeName { get; set; }
         public string? CpeTitle { get; set; }
-        public bool valid { get; set; }
         public string Part { get; set; }
         public string Vendor { get; set; }
         public string Product { get; set; }

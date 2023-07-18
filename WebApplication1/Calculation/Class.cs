@@ -5,7 +5,6 @@ namespace CPEApi.Calculation
     public class CalculationMethods
     {
 
-        private readonly CPEContext _context;
         private readonly Context _sqlcontext;
         public enum parameters : ushort
         {
@@ -15,33 +14,32 @@ namespace CPEApi.Calculation
 
         }
 
-        public CalculationMethods(CPEContext context, Context sqlcontext)
+        public enum ComparisonResult
+        {
+            Disjoint,
+            Equal,
+            Subset,
+            Superset
+        }
+
+        public enum Element
+        {
+            Part,
+            Product,
+            Version,
+            Vendor
+        }
+
+
+        public CalculationMethods(Context sqlcontext)
         {
             _sqlcontext = sqlcontext;
-            _context = context;
         }
 
         #region Matching
-        #region recursive token
+        #region tokenDistance
 
-        public IEnumerable<Cpe>? VendorTokenRatio(string Vendor, int Threshhold)
-        {
-            Console.WriteLine("Vendor similarity( " + Threshhold + "): ");
-            var VendorList = _sqlcontext.Cpes.AsEnumerable().Where(c => FuzzySharp.Fuzz.TokenSortRatio(c.Vendor.Replace("_", " ").ToLower(), Vendor.ToLower()) >= Threshhold);
-            if (VendorList.ToList().Any())
-            {
-                Console.WriteLine("Vendor: " + VendorList.First().Vendor + " FOUND");
-                return VendorList;
-            }
-            else
-            {
-                Console.WriteLine(" FAILED");
-                return null;
-            }
-        }
-
-
-        public IEnumerable<Tuple<int, string>>? TopTokenRatio(string Vendor, int Threshhold, parameters param)
+        public IEnumerable<Tuple<int, string>>? TopTokenRatio(string Token, int Threshhold, parameters param)
         {
             IEnumerable<Tuple<int, string>>? Collection;
             switch (param)
@@ -49,22 +47,31 @@ namespace CPEApi.Calculation
                 case parameters.VendorParam:
 
                     Collection = _sqlcontext.Cpes.AsEnumerable().Select(c => new Tuple<int, string>(
-                        FuzzySharp.Fuzz.TokenSortRatio(c.Vendor.Replace("_", " ").ToLower(), Vendor.ToLower()),
+                        FuzzySharp.Fuzz.TokenSortRatio(c.Vendor.Replace("_", " ").ToLower(), Token.ToLower().Replace("_", " ")),
                         c.Vendor)
                     ).OrderByDescending(c => c.Item1).DistinctBy(c => c.Item2).Take(Threshhold);
                     break;
-              
+
                 case parameters.ProductParam:
 
                     Collection = _sqlcontext.Cpes.AsEnumerable().Select(c => new Tuple<int, string>(
-                        FuzzySharp.Fuzz.TokenSortRatio(c.Product.Replace("_", " ").ToLower(), Vendor.ToLower()),
-                        c.Vendor)
+                        FuzzySharp.Fuzz.TokenSortRatio(c.Product.Replace("_", " ").ToLower(), Token.Replace("_", " ").ToLower()),
+                        c.Product)
+                    ).ToList().OrderByDescending(c => c.Item1).DistinctBy(c => c.Item2);
+                    Collection = Collection.OrderByDescending(c => c.Item1).DistinctBy(c => c.Item2).Take(Threshhold);
+                    break;
+
+                case parameters.VersionParam:
+
+                    Collection = _sqlcontext.Cpes.AsEnumerable().Select(c => new Tuple<int, string>(
+                        FuzzySharp.Fuzz.TokenSortRatio(c.Version.Replace("_", " ").ToLower(), Token.ToLower()),
+                        c.Version)
                     ).OrderByDescending(c => c.Item1).DistinctBy(c => c.Item2).Take(Threshhold);
                     break;
                 default:
                     return null;
             }
-            
+
 
             if (Collection.ToList().Any())
             {
@@ -78,37 +85,7 @@ namespace CPEApi.Calculation
         }
 
 
-        public IEnumerable<Cpe>? TitleTokenRatio(string Title, int Threshhold)
-        {
-            Console.WriteLine("Title similarity( " + Threshhold + "): ");
-            var TitleList = _sqlcontext.Cpes.AsEnumerable().Where(c => FuzzySharp.Fuzz.TokenSortRatio(c.Title.Replace("_", " ").ToLower(), Title.ToLower()) >= Threshhold);
-            if (TitleList.ToList().Any())
-            {
-                Console.WriteLine("Title: " + TitleList.First().Title + " FOUND");
-                return TitleList;
-            }
-            else
-            {
-                Console.WriteLine(" FAILED");
-                return null;
-            }
-        }
 
-        public IEnumerable<Cpe>? ProductTokenRatio(IEnumerable<Cpe> List, string Product, int Threshhold)
-        {
-            Console.WriteLine("ProductEqualMatch similarity( " + Threshhold + "): ");
-            var ProductList = List.Where(c => FuzzySharp.Fuzz.TokenSortRatio(c.Product.Replace(" ", "_").ToLower(), Product.ToLower()) >= Threshhold);
-            if (ProductList.ToList().Any())
-            {
-                Console.WriteLine(ProductList.ToList().Count() + " FOUND ");
-                return ProductList;
-            }
-            else
-            {
-                Console.WriteLine(" FAILED");
-                return null;
-            }
-        }
         #endregion
 
         #region mengenschrumpfen
@@ -158,13 +135,19 @@ namespace CPEApi.Calculation
                 return null;
             }
         }
+        /// <summary>
+        /// Matches the Product given to CPEs equal to the Product
+        /// </summary>
+        /// <param name="List"></param>
+        /// <param name="Product"></param>
+        /// <returns></returns>
         public IQueryable<Cpe>? ProductEqualMatch(IQueryable<Cpe> List, string Product)
         {
             Console.WriteLine("ProductEqualMatch:");
             var ProductList = List.Where(c => c.Product == Product.Replace(" ", "_").ToLower());
             if (ProductList.ToList().Any())
             {
-                Console.WriteLine(ProductList.ToList().Count() + " FOUND ");
+                Console.WriteLine(ProductList.ToList().Count + " FOUND ");
                 return ProductList;
             }
             else
@@ -173,6 +156,12 @@ namespace CPEApi.Calculation
                 return null;
             }
         }
+        /// <summary>
+        /// Matches the Product given to CPEs containing the entire Product
+        /// </summary>
+        /// <param name="List"></param>
+        /// <param name="Product"></param>
+        /// <returns></returns>
         public IQueryable<Cpe>? ProductContainsMatch(IQueryable<Cpe> List, string Product)
         {
             Console.WriteLine("ProductContainsMatch:");
@@ -188,6 +177,13 @@ namespace CPEApi.Calculation
                 return null;
             }
         }
+
+        /// <summary>
+        /// Matches the Product given to CPEs with any product  with one of the tokens as title
+        /// </summary>
+        /// <param name="List"></param>
+        /// <param name="Product"></param>
+        /// <returns></returns>
         public IQueryable<Cpe>? ProductPartEqualMatch(IQueryable<Cpe> List, string Product)
         {
             Console.WriteLine("ProductPartEqualMatch");
@@ -195,197 +191,221 @@ namespace CPEApi.Calculation
             string[] productParts = Product.ToLower().Split(" ");
             ProductList = List.Where(c => productParts.Any(val => c.Product.Equals(val)));
             if (ProductList.ToList().Any())
-            { Console.WriteLine(ProductList.ToList().Count() + " FOUND"); return ProductList; }
+            { Console.WriteLine(ProductList.ToList().Count + " FOUND"); return ProductList; }
             else { Console.WriteLine(" FAILED"); return null; }
         }
-        public IQueryable<Cpe>? ProductPartContainsAllMatch(IQueryable<Cpe> List, string Product)
+
+
+        public IQueryable<Cpe>? ProductPartContainsMultipleMatch(IQueryable<Cpe> List, string Product)
         {
-            Console.WriteLine("ProductPartContainsAllMatch");
+            Console.WriteLine("ProductPartContainsMultipleMatch");
             IQueryable<Cpe> ProductList;
             string[] productParts = Product.ToLower().Split(" ");
-
-            switch (productParts.Length)
+            var query = _sqlcontext.Cpes.ToList().Select(x => new
             {
-                case 1:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0]));
-                    break;
-                case 2:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                    && c.Product.Contains(productParts[1]));
-                    break;
-                case 3:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2]));
-                    break;
-                case 4:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2])
-                   && c.Product.Contains(productParts[3]));
-                    break;
-                case 5:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2])
-                   && c.Product.Contains(productParts[3])
-                   && c.Product.Contains(productParts[4]));
-                    break;
-                case 6:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2])
-                   && c.Product.Contains(productParts[3])
-                   && c.Product.Contains(productParts[4])
-                   && c.Product.Contains(productParts[5]));
-                    break;
-                case 7:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2])
-                   && c.Product.Contains(productParts[3])
-                   && c.Product.Contains(productParts[4])
-                   && c.Product.Contains(productParts[5])
-                   && c.Product.Contains(productParts[6]));
-                    break;
-                case 8:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2])
-                   && c.Product.Contains(productParts[3])
-                   && c.Product.Contains(productParts[4])
-                   && c.Product.Contains(productParts[5])
-                   && c.Product.Contains(productParts[6])
-                   && c.Product.Contains(productParts[7]));
-                    break;
-                case 9:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   && c.Product.Contains(productParts[1])
-                   && c.Product.Contains(productParts[2])
-                   && c.Product.Contains(productParts[3])
-                   && c.Product.Contains(productParts[4])
-                   && c.Product.Contains(productParts[5])
-                   && c.Product.Contains(productParts[6])
-                   && c.Product.Contains(productParts[7])
-                   && c.Product.Contains(productParts[8])
-                   );
-                    break;
-                default:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0]));
-                    break;
+                x,
+                count = productParts.Count(o => x.Product.Contains(o))
+            }).ToList();
+            int max = query.Max(p => p.count);
+            ProductList = query.Where(p => p.count.Equals(max)).Select(n => n.x).AsQueryable();
+            if (ProductList.ToList().Any() && max >1)
+            {
+                Console.WriteLine(ProductList.ToList().Count + " FOUND with Threshhold: " + max);
+                return ProductList;
             }
-            if (ProductList.ToList().Any())
-            { Console.WriteLine(ProductList.ToList().Count() + " FOUND"); return ProductList; }
             else { Console.WriteLine(" FAILED"); return null; }
         }
+
+        /// <summary>
+        /// Matches the Product given to CPEs containing any tokens in its Product field
+        /// </summary>
+        /// <param name="List"></param>
+        /// <param name="Product"></param>
+        /// <returns></returns>
         public IQueryable<Cpe>? ProductPartContainsAnyMatch(IQueryable<Cpe> List, string Product)
         {
             Console.WriteLine("ProductPartContainsAnyMatch");
             IQueryable<Cpe> ProductList;
             string[] productParts = Product.ToLower().Split(" ");
-
-            switch (productParts.Length)
-            {
-                case 1:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0]));
-                    break;
-                case 2:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                    || c.Product.Contains(productParts[1]));
-                    break;
-                case 3:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                    || c.Product.Contains(productParts[1])
-                    || c.Product.Contains(productParts[2]));
-                    break;
-                case 4:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                    || c.Product.Contains(productParts[1])
-                    || c.Product.Contains(productParts[2])
-                    || c.Product.Contains(productParts[3]));
-                    break;
-                case 5:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                    || c.Product.Contains(productParts[1])
-                    || c.Product.Contains(productParts[2])
-                    || c.Product.Contains(productParts[3])
-                    || c.Product.Contains(productParts[4]));
-                    break;
-                case 6:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   || c.Product.Contains(productParts[1])
-                   || c.Product.Contains(productParts[2])
-                   || c.Product.Contains(productParts[3])
-                   || c.Product.Contains(productParts[4])
-                   || c.Product.Contains(productParts[5]));
-                    break;
-                case 7:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   || c.Product.Contains(productParts[1])
-                   || c.Product.Contains(productParts[2])
-                   || c.Product.Contains(productParts[3])
-                   || c.Product.Contains(productParts[4])
-                   || c.Product.Contains(productParts[5])
-                   || c.Product.Contains(productParts[6]));
-                    break;
-                case 8:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   || c.Product.Contains(productParts[1])
-                   || c.Product.Contains(productParts[2])
-                   || c.Product.Contains(productParts[3])
-                   || c.Product.Contains(productParts[4])
-                   || c.Product.Contains(productParts[5])
-                   || c.Product.Contains(productParts[6])
-                   || c.Product.Contains(productParts[7]));
-                    break;
-                case 9:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0])
-                   || c.Product.Contains(productParts[1])
-                   || c.Product.Contains(productParts[2])
-                   || c.Product.Contains(productParts[3])
-                   || c.Product.Contains(productParts[4])
-                   || c.Product.Contains(productParts[5])
-                   || c.Product.Contains(productParts[6])
-                   || c.Product.Contains(productParts[7])
-                   || c.Product.Contains(productParts[8]));
-                    break;
-                default:
-                    ProductList = List.Where(c => c.Product.Contains(productParts[0]));
-                    break;
-            }
+            Predicate<Tuple<Cpe, string[]>> predicate = containsAny;
+            ProductList = List.ToList().Where(c => predicate(new Tuple<Cpe, string[]>(c, productParts))).AsQueryable();
 
             if (ProductList.ToList().Any())
             { Console.WriteLine(ProductList.ToList().Count() + " FOUND"); return ProductList; }
             else { Console.WriteLine(" FAILED"); return null; }
 
         }
-        #endregion
-
-        #region recursive distance
-        public IEnumerable<Cpe>? recursiveLower(string Product, int comp)
+        public static bool containsAny(Tuple<Cpe, string[]> productParts)
         {
-            Console.WriteLine(comp);
-            var alt = _sqlcontext.Cpes.AsEnumerable().Where(x => FuzzySharp.Fuzz.WeightedRatio(x.Product, Product.Replace(" ", "_").ToLower()) > comp).OrderByDescending(x => FuzzySharp.Fuzz.WeightedRatio(x.Product, Product.Replace(" ", "_").ToLower())).AsEnumerable();
-            if (alt.Any())
-            { return alt; }
-            else
+            foreach (string productPart in productParts.Item2)
             {
-                if (comp > 0)
-                { return recursiveLower(Product, comp - 10); }
-                else
-                { return null; }
+                if (productParts.Item1.Product.Contains(productPart))
+                {
+                    return true;
+                }
             }
+            return false;
         }
         #endregion
 
-        #region Version
-        public IEnumerable<Cpe>? CompareVersions(IEnumerable<Cpe> List, string version2)
+        #region NIST
+
+        public List<Tuple<Element, ComparisonResult>> Compare_WFNs(Cpe source, Cpe target)
         {
-            IEnumerable<Cpe> versionList = Enumerable.Empty<Cpe>();
-            int threshhold = 0;
-            while (!versionList.Any())
-            { versionList = List.Where(o => CompareVersion((o.Version.Contains('.')) ? o.Version.Split('.') : new string[1] { o.Version }, version2.Contains('.') ? version2.Split('.') : new string[1] { version2 }, threshhold++)); }
-            return versionList;
+            List<Tuple<Element, ComparisonResult>> resultList = new List<Tuple<Element, ComparisonResult>>();
+
+            resultList.Add(new Tuple<Element, ComparisonResult>(Element.Part, compare(source.Part, target.Part)));
+            resultList.Add(new Tuple<Element, ComparisonResult>(Element.Vendor, compare(source.Vendor, target.Vendor)));
+            resultList.Add(new Tuple<Element, ComparisonResult>(Element.Product, compare(source.Product, target.Product)));
+            resultList.Add(new Tuple<Element, ComparisonResult>(Element.Version, compare(source.Version, target.Version)));
+
+            return resultList;
+        }
+
+        private ComparisonResult compare(string source, string target)
+        {
+            if (!string.IsNullOrEmpty(source))
+                source = source.ToLower();
+
+            if (!string.IsNullOrEmpty(target))
+                target = target.ToLower();
+
+            if (ContainsWildcards(target))
+                return ComparisonResult.Disjoint;
+
+            if (source == target)
+                return ComparisonResult.Equal;
+
+            if (source == "any")
+                return ComparisonResult.Superset;
+
+            if (target == "any")
+                return ComparisonResult.Subset;
+
+            if (source == "na" || target == "na")
+                return ComparisonResult.Disjoint;
+
+            return compareStrings(source, target);
+        }
+
+        private ComparisonResult compareStrings(string source, string target)
+        {
+            int start = 0;
+            int end = source.Length;
+            int begins = 0;
+            int ends = 0;
+
+            if (source.StartsWith("*"))
+            {
+                start = 1;
+                begins = -1;
+            }
+            else
+            {
+                while (start < source.Length && source[start] == '?')
+                {
+                    start++;
+                    begins++;
+                }
+            }
+
+            if (source.EndsWith("*") && isEvenWildcards(source, end - 1))
+            {
+                end--;
+                ends = -1;
+            }
+            else
+            {
+                while (end > 0 && source[end - 1] == '?' && isEvenWildcards(source, end - 1))
+                {
+                    end--;
+                    ends++;
+                }
+            }
+
+            source = source.Substring(start, end - start);
+            int index = -1;
+            int leftover = target.Length;
+
+            while (leftover > 0)
+            {
+                index = target.IndexOf(source, index + 1);
+
+                if (index == -1)
+                    break;
+
+                int escapes = countEscapeCharacters(target, 0, index);
+
+                if (index > 0 && begins != -1 && begins < (index - escapes))
+                    break;
+
+                escapes = countEscapeCharacters(target, index + 1, target.Length);
+                leftover = target.Length - index - escapes - source.Length;
+
+                if (leftover > 0 && ends != -1 && leftover > ends)
+                    continue;
+
+                return ComparisonResult.Superset;
+            }
+
+            return ComparisonResult.Disjoint;
+        }
+
+        private int countEscapeCharacters(string str, int start, int end)
+        {
+            int result = 0;
+            bool active = false;
+
+            for (int i = 0; i < end; i++)
+            {
+                if (str[i] == '\\')
+                    active = !active;
+
+                if (active && i >= start)
+                    result++;
+            }
+
+            return result;
+        }
+
+        private bool isEvenWildcards(string str, int idx)
+        {
+            int result = 0;
+
+            while (idx > 0 && str[idx - 1] == '\\')
+            {
+                idx--;
+                result++;
+            }
+
+            return result % 2 == 0;
+        }
+
+        private bool ContainsWildcards(string str)
+        {
+            return str.Contains("?") || str.Contains("*");
+        }
+
+        #endregion
+
+        #region Version
+        public List<CPEItem>? CompareVersions(IEnumerable<CPEItem> List, string version2)
+        {
+            List<CPEItem> versionList = new List<CPEItem>();
+            if (version2.Contains('.'))
+            {
+                int threshhold = 0;
+                while (!versionList.Any())
+                { versionList = List.Where(o => CompareVersion((o.Version.Contains('.')) ? o.Version.Split('.') : new string[1] { o.Version }, version2.Contains('.') ? version2.Split('.') : new string[1] { version2 }, threshhold++)).ToList(); }   
+            }
+            else
+            {
+                versionList =  List.Select(c => new Tuple<float, CPEItem>(
+                      FuzzySharp.Fuzz.PartialTokenSetRatio(c.Version.Replace("_", " ").ToLower(), version2.ToLower().Replace("_", " ")),
+                      c)
+                  ).OrderByDescending(o => o.Item1).Select(o => o.Item2).ToList();               
+            }
+            return versionList.GroupBy(o => new { o.Product, o.Version, o.Vendor }).Select(x => x.First()).ToList();
         }
         bool CompareVersion(string[] components1, string[] components2, int parts)
         {
@@ -417,6 +437,7 @@ namespace CPEApi.Calculation
 
         #endregion Matching
 
+        #region Evaluation
         public List<CPEItem> OrderInverseAlgorithmProduct(IEnumerable<Cpe> Query, string Product)
         {
             string[] productParts = Regex.Replace(Product, @"[^\p{L}\p{N}]+", " ").ToLower().Split(" ", StringSplitOptions.RemoveEmptyEntries);
@@ -424,7 +445,6 @@ namespace CPEApi.Calculation
             int[] partQuantity = new int[productParts.Length];
             float[] partWeight = new float[productParts.Length];
             int ProductNumber = Query.Count();
-            //subtract spaces
             int Productlength = Product.Length;
             int index = 0;
             foreach (string part in productParts)
@@ -435,10 +455,10 @@ namespace CPEApi.Calculation
                 {
                     float num = ((float)ProductNumber / (float)partQuantity[index]);
                     float len = ((float)partlength[index] / (float)Productlength);
-                    partWeight[index] = len + num;
+                    partWeight[index] = (len * num) / ProductNumber;
                 }
                 else
-                { partWeight[index] = 0; }
+                { partWeight[index] = 1; }
                 Console.WriteLine(part + " length " + partlength[index] + " quant " + partQuantity[index] + " weight " + partWeight[index]);
                 index++;
             }
@@ -458,159 +478,45 @@ namespace CPEApi.Calculation
                 Sw_edition = x.SwEdition,
                 Update = x.Update,
                 Version = x.Version,
-                GlobalQueryScore = 1,
+                GlobalQueryScore = 0,
                 LocalQueryScore = 1
 
             }).ToList();
             foreach (CPEItem item in items)
             {
+                int divider = 0;
                 foreach (string part in productParts)
                 {
                     if (item.Product.ToLower().Contains(part))
                     {
+
                         int partPosition = Array.IndexOf(productParts, part);
                         item.LocalQueryScore = item.LocalQueryScore * partWeight[partPosition];
 
 
                         var b = _sqlcontext.Tfproducts.Where(x => x.Term == part.ToLower()).FirstOrDefault();
+
                         if (b != null)
                         {
-                            item.GlobalQueryScore = item.GlobalQueryScore + b.TfIdfLogNorm;
+                            divider += 1;
+                            item.GlobalQueryScore +=  1/b.LogNormalized;
 
                         }
-                        //  * item.GlobalQueryScore;
                     }
                 }
-            }
-            items = items.OrderByDescending(c => c.LocalQueryScore).ThenByDescending(x => FuzzySharp.Fuzz.WeightedRatio(x.Product, Product.Replace(" ", "_").ToLower())).ThenBy(x => Fastenshtein.Levenshtein.Distance(x.Product, Product.Replace(" ", "_").ToLower())).ToList();
-            return items;
-        }
-        public List<CPEItem> OrderInverseAlgorithmTitle(IEnumerable<Cpe> Query, string Title)
-        {
-            string[] TitleParts = Regex.Replace(Title, @"[^\p{L}\p{N}]+", " ").ToLower().Split(" ", StringSplitOptions.RemoveEmptyEntries);
-            int[] partlength = new int[TitleParts.Length];
-            int[] partQuantity = new int[TitleParts.Length];
-            float[] partWeight = new float[TitleParts.Length];
-            int TitleNumber = Query.Count();
-            int Titlelength = Title.Length;
-
-            int index = 0;
-
-            foreach (string part in TitleParts)
-            {
-                partlength[index] = part.Length;
-                partQuantity[index] = Query.Where(c => c.Title.ToLower().Contains(part)).Count();
-                if (partQuantity[index] > 0 && partlength[index] > 0)
+                if (divider == 0)
                 {
-                    float num = ((float)TitleNumber / (float)partQuantity[index]);
-                    float len = ((float)partlength[index] / (float)Titlelength);
-                    partWeight[index] = len + num;
+                    item.GlobalQueryScore = 0;
                 }
                 else
-                { partWeight[index] = 0; }
-                Console.WriteLine(part + " length " + partlength[index] + " quant " + partQuantity[index] + " weight " + partWeight[index]);
-                index++;
-            }
-            List<CPEItem> items = Query.AsEnumerable().Select(x => new CPEItem
-            {
-                CpeName = x.Name,
-                CpeTitle = x.Title,
-                Part = x.Part,
-                Vendor = x.Vendor,
-                Edition = x.Edition,
-                Target_hw = x.TargetHw,
-                Target_sw = x.TargetSw,
-                Language = x.Language,
-                Id = x.Id,
-                Other = x.Other,
-                Product = x.Product,
-                Sw_edition = x.SwEdition,
-                Update = x.Update,
-                Version = x.Version,
-                GlobalQueryScore = 1,
-                LocalQueryScore = 1
-            }).ToList();
-            foreach (CPEItem item in items)
-            {
-                foreach (string part in TitleParts)
                 {
-                    if (item.Product.ToLower().Contains(part))
-                    {
-                        int partPosition = Array.IndexOf(TitleParts, part);
-                        item.LocalQueryScore = item.LocalQueryScore * partWeight[partPosition];
-                    }
+                    item.GlobalQueryScore /= divider;
                 }
+
             }
-            items = items.OrderByDescending(c => c.LocalQueryScore).ThenByDescending(x => FuzzySharp.Fuzz.WeightedRatio(x.CpeTitle.ToLower(), Title.ToLower())).ThenBy(x => Fastenshtein.Levenshtein.Distance(x.CpeTitle.ToLower(), Title.Replace(" ", "_").ToLower())).ToList();
+            items = items.OrderBy(c => c.LocalQueryScore).ThenByDescending(x => FuzzySharp.Fuzz.WeightedRatio(x.Product, Product.Replace(" ", "_").ToLower())).ThenBy(x => Fastenshtein.Levenshtein.Distance(x.Product, Product.Replace(" ", "_").ToLower())).ToList();
             return items;
         }
-        //IBM Tivoli Business Systems Manager
-        public bool CPEItemExists(int id)
-        {
-            return (_context.CPEItems?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-        public void evaluateListProduct(string Product, List<CPEItem> ProductList)
-        {
-            Console.WriteLine(Product.Replace(" ", "_").ToLower() + "\n");
-            List<Tuple<string, float>> singleProductList = new List<Tuple<string, float>>();
-            foreach (CPEItem item in ProductList)
-            {
-                float score = (item.LocalQueryScore != null) ? (float)item.LocalQueryScore : 0;
-                Tuple<string, float> pair = new Tuple<string, float>(item.Product, score);
-                if (!singleProductList.Contains(pair))
-                {
-                    singleProductList.Add(pair);
-                }
-            }
-            Console.WriteLine(singleProductList.Count() + "  different Products");
-            int i = 0;
-            foreach (var p in singleProductList)
-            {
-                if (i > 15) { break; }
-                Console.WriteLine(p.Item1 + " Score " + p.Item2 + " [ Levenshtein " + Fastenshtein.Levenshtein.Distance(p.Item1.Replace("_", " ").ToLower(), Product.Replace("_", " ").ToLower()) + " / FuzzySharp " + FuzzySharp.Fuzz.WeightedRatio(p.Item1.Replace("_", " ").ToLower(), Product.Replace("_", " ").ToLower()) + "]");
-                i++;
-            }
-
-        }
-
-
-
-
-
-
-
-        //public string ProbableCPE(IQueryable<CPEItem> List)
-        //{
-        //    List.ToList();
-        //    List<string> VendorList = new List<string>();
-        //    List<string> ProductList = new List<string>();
-        //    foreach (CPEItem item in List)
-        //    {
-        //        if (!VendorList.Contains(item.Vendor))
-        //        {
-        //            VendorList.Add(item.Vendor);
-        //        }
-        //        if (!ProductList.Contains(item.Product))
-        //        {
-        //            ProductList.Add(item.Product);
-        //        }
-        //    }
-        //    string Vendors = string.Empty;
-        //    string Products = string.Empty;
-        //    foreach (string v in VendorList)
-        //    {
-        //        Vendors = Vendors + "/" + v;
-        //    }
-        //    if (ProductList.Count < 15)
-        //    {
-        //        foreach (string p in ProductList)
-        //        {
-        //            Products = Products + "/" + p;
-        //        }
-        //    }
-        //    else { Products = "unclear"; }
-        //    return "CPE : Vendor =[" + Vendors + "] Product =[" + Products + "]";
-
-        //}
     }
+    #endregion
 }

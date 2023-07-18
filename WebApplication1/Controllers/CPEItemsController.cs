@@ -31,7 +31,7 @@ namespace CPEApi.Controllers
             if (xdoc.Root != null)
             {
                 XElement xroot = xdoc.Root;
-                var test = xroot.Descendants().Where(s => s.Name == (prefix + "cpe-item")).Select(o =>
+                var cpes = xroot.Descendants().Where(s => s.Name == (prefix + "cpe-item")).Select(o =>
                 {
                     var parts = o.Descendants().
                                        Where(s => s.Name == (prefix23 + "cpe23-item")).
@@ -56,7 +56,7 @@ namespace CPEApi.Controllers
                         Other = parts[12]
                     };
                 });
-                _sqlcontext.AddRange(test);
+                _sqlcontext.AddRange(cpes);
                 _sqlcontext.SaveChanges();
 
                 return "success";

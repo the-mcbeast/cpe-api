@@ -1,0 +1,37 @@
+stateDiagram-v2
+    state fork_state <<fork>>
+      [*] --> fork_state : VendorString, ProductString
+      fork_state --> Compare(Product)
+      fork_state --> Compare(Vendor)
+
+      state join_state <<join>>
+      state TakeAllNonDisjunktinBoth <<choice>>
+      Compare(Product) --> join_state
+        Compare(Vendor) --> join_state
+      join_state --> TakeAllNonDisjunktinBoth : TakeAllNonDisjunktinBoth
+            TakeAllNonDisjunktinBoth --> OrderByScoring : CPEs
+      
+      TakeAllNonDisjunktinBoth --> returnNoSuccess : EmptyList
+      returnNoSuccess --> [*]
+      OrderByScoring --> returnCPEs
+      returnCPEs --> [*]
+
+
+
+      stateDiagram-v2
+    state CountainsWildcard <<choice>>
+    state Equal <<choice>>
+    state compareStrings <<choice>>
+    [*]  --> CountainsWildcard
+     
+    CountainsWildcard --> Equal : CountainsWildcard(target)
+
+    Equal --> returnEqual/SuperSet/Subset : source==target
+    Equal --> compareStrings: source!=target 
+    compareStrings --> returnEqual/SuperSet/Subset : charComparison
+    compareStrings --> returnDisjoint : charComparison
+    CountainsWildcard -->  returnDisjoint: CountainsWildcard(target)
+    returnEqual/SuperSet/Subset --> [*]
+
+    returnDisjoint --> [*]
+

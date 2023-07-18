@@ -1,0 +1,19 @@
+stateDiagram-v2
+    state fork_state <<fork>>
+      [*] --> fork_state
+      fork_state --> TopTokenRatio(Product) :  ProductString
+      fork_state --> TopTokenRatio(Vendor) : VendorString 
+
+      state join_state <<join>>
+      
+      state TakeAllContainingBoth <<choice>>
+
+      TopTokenRatio(Product) --> join_state : ProductArray
+        TopTokenRatio(Vendor) --> join_state : VendorArray
+      join_state --> TakeAllContainingBoth :CPEs with Vendor in Vendorarray and Product in ProductArray
+      
+      TakeAllContainingBoth --> returnCPEs : CPEs
+      
+      TakeAllContainingBoth --> returnNoSuccess : EmptyList
+      returnNoSuccess --> [*]
+      returnCPEs --> [*]

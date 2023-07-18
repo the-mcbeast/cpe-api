@@ -7,7 +7,7 @@ namespace CPEApi.Models
     {
         public int Id { get; set; }
         public string Term { get; set; } = null!;
-        public int RawCount { get; set; }
+        public int? RawCount { get; set; }
         public float? TermFrequency { get; set; }
         public float? LogNormalized { get; set; }
         public float? DoubleNormalized { get; set; }

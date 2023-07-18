@@ -5,182 +5,23 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+
+
 namespace CPEApi.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class CPEItemsController : ControllerBase
     {
-        private readonly CPEContext _context;
         private readonly Context _sqlcontext;
         public CalculationMethods Calc;
-        public CPEItemsController(CPEContext context
-           , Context sqlcontext
-            )
+        public CPEItemsController(Context sqlcontext)
         {
-            _context = context;
             _sqlcontext = sqlcontext;
-            Calc = new CalculationMethods(_context, _sqlcontext);
+            Calc = new CalculationMethods(_sqlcontext);
         }
-        #region old
-        //}
-        //[HttpGet("ProdTermFreq")]
-        //public async Task<ActionResult<string>> ProductTermFrequency()
-        //{
-        //    if (_sqlcontext.Cpes == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else
-        //    {
-        //        var prod = _sqlcontext.Cpes.OrderBy(x => x.Product).GroupBy(x => x.Product).Select(x => x.First().Product);
-        //        var terms = new List<Tfproduct>();
-        //        char[] delimiterChars = { ' ', ',', '.', ':', '\t','_', '\'', '/', ':','\\' , '%', '!',  '"', '@', '#',  '&', '[', '$',  '?',   '|', '(',  ')', '>', ']' , '+', '-', '*' , '<', '=' , '^',  };
-        //        var tmp = new List<string>();                        
-        //        foreach (var item in prod)                           
-        //        {                                                    
 
-
-        //            var b = item.ToLower().Split(delimiterChars);    
-        //            foreach (var a in b)                             
-        //            {                                                 
-        //                if (a.Length > 0)                              
-        //                { tmp.Add(a); }
-        //            }
-        //            //count 203699
-
-        //        }
-        //        foreach (var term in tmp)
-        //        {
-        //            if (term.Length > 0)
-        //            {
-        //                if (terms.Any(o => o.Term == term))
-        //                {
-        //                    terms.First(o => o.Term == term).RawCount++;
-        //                }
-        //                else
-        //                {
-        //                    terms.Add(new Tfproduct
-        //                    {
-        //                        Term = term,
-        //                        RawCount = 1
-        //                    });
-        //                }
-        //            }
-        //        }
-        //        _sqlcontext.AddRange(terms);
-        //        _sqlcontext.SaveChanges();
-        //        return Ok();
-        //    }
-
-        //}
-
-
-        //[HttpGet("VendorTermFreq")]
-        //public async Task<ActionResult<string>> VendorTermFrequency()
-        //{
-        //    if (_sqlcontext.Cpes == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else
-        //    {
-        //        var prod = _sqlcontext.Cpes.OrderBy(x => x.Vendor).GroupBy(x => x.Vendor).Select(x => x.First().Vendor);
-        //        var terms = new List<Tfvendor>();
-        //        char[] delimiterChars = { ' ', ',', '.', ':', '\t', '_', '\'', '/', ':', '\\', '%', '!', '"', '@', '#', '&', '[', '$', '?', '|', '(', ')', '>', ']', '+', '-', '*', '<', '=', '^', };
-
-        //        var tmp = new List<string>();
-        //        foreach (var item in prod)
-        //        {
-
-        //            var b = item.ToLower().Split(delimiterChars);
-        //            foreach (var a in b)
-        //            {
-        //                if (a.Length > 0)
-        //                { tmp.Add(a); }
-        //            }
-        //            //count 26060
-
-        //        }
-        //        foreach (var term in tmp)
-        //        {
-        //            if (term.Length > 0)
-        //            {
-        //                if (terms.Any(o => o.Term == term))
-        //                {
-        //                    terms.First(o => o.Term == term).RawCount++;
-        //                }
-        //                else
-        //                {
-        //                    terms.Add(new Tfvendor
-        //                    {
-        //                        Term = term,
-        //                        RawCount = 1
-        //                    });
-        //                }
-        //            }
-        //        }
-        //        _sqlcontext.AddRange(terms);
-        //        _sqlcontext.SaveChanges();
-        //        return Ok();
-        //    }
-
-        //}
-
-
-        //[HttpGet("TitleTermFreq")]
-        //public async Task<ActionResult<string>> TitleTermFrequency()
-        //{
-        //    if (_sqlcontext.Cpes == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    else
-        //    {
-        //        var prod = _sqlcontext.Cpes.OrderBy(x => x.Title).GroupBy(x => x.Title).Select(x => x.First().Title);
-        //        var terms = new List<Tftitle>();
-        //        char[] delimiterChars = { ' ', ',', '.', ':', '\t', '_', '\'', '/', ':', '\\', '%', '!', '"', '@', '#', '&', '[', '$', '?', '|', '(', ')', '>', ']', '+', '-', '*', '<', '=', '^', };
-
-        //        var tmp = new List<string>();
-        //        foreach (var item in prod)
-        //        {
-
-        //            var b = item.ToLower().Split(delimiterChars);
-        //            foreach (var a in b)
-        //            {
-        //                if (a.Length > 0)
-        //                { tmp.Add(a); }
-        //            }
-        //            //count 203699
-
-        //        }
-        //        foreach (var term in tmp)
-        //        {
-        //            if (term.Length > 0)
-        //            {
-        //                if (terms.Any(o => o.Term == term))
-        //                {
-        //                    terms.First(o => o.Term == term).RawCount++;
-        //                }
-        //                else
-        //                {
-        //                    terms.Add(new Tftitle
-        //                    {
-        //                        Term = term,
-        //                        RawCount = 1
-        //                    });
-        //                }
-        //            }
-        //        }
-        //        _sqlcontext.AddRange(terms);
-        //        _sqlcontext.SaveChanges();
-        //        return Ok();
-        //    }
-
-        //}
-        #endregion
-
-        //  api/CPEItems/uploadDictionary/
         [HttpGet("uploadDictionary/")]
         public async Task<ActionResult<string>> UpLoadDictionary()
         {
@@ -223,12 +64,31 @@ namespace CPEApi.Controllers
             else { return NotFound(); }
         }
 
-        [HttpGet("FindByParam")]
-        public ActionResult<IEnumerable<CPEItem>> FindCPEItems(string? Part, string? Vendor, string Product, string? Version)
+        [HttpGet("FindByParamSet")]
+        public ActionResult FindCPEItemsSet(string? Part, string? Vendor, string Product, string? Version)
         {
+            string Method = "SET";
+            Part = (Part != null) ? Part.ToLower().Replace("_", " ") : null;
+            Vendor = (Vendor != null) ? Vendor.ToLower().Replace("_", " ") : null;
+            Product = Product.ToLower().Replace("_", " ");
+            Version = (Version != null) ? Version.ToLower().Replace("_", " ") : null;
+            if (!_sqlcontext.Anfragens.Where(x => x.Part == Part && x.Vendor == Vendor && x.Product == Product && x.Version == Version).Any())
+            {
+                _sqlcontext.Add(new Anfragen { Part = Part, Vendor = Vendor, Product = Product, Version = Version, Created = DateTime.Now });
+                _sqlcontext.SaveChanges();
+            }
+            else
+            {
+                if (_sqlcontext.Antworten2s.Where(o => o.Typ == _sqlcontext.Typs.Where(x => x.Name == Method).FirstOrDefault().Id && o.AnfrageId == _sqlcontext.Anfragens.Where(x => x.Part == Part && x.Vendor == Vendor && x.Product == Product && x.Version == Version).FirstOrDefault().Id).Any())
+                {
+                    return Ok();
+                }
+            }
+
+            Console.WriteLine("START" + DateTime.Now.ToString("mm-ss"));
             if (_sqlcontext.Cpes == null)
             {
-                return NotFound();
+                return Ok();
             }
             IQueryable<Cpe>? VendorList;
             if (Vendor != null)
@@ -241,8 +101,7 @@ namespace CPEApi.Controllers
                     {
                         VendorList = Calc.ContainsVendor(Vendor);
                         if (VendorList == null)
-                        { //Correction Attempt here
-
+                        {
                             VendorList = _sqlcontext.Cpes;
                         }
                     }
@@ -258,21 +117,25 @@ namespace CPEApi.Controllers
             IQueryable<Cpe>? ProductList;
             string ProductNaked = Regex.Replace(Product, @"[^\p{L}\p{N}]+", " ");
             ProductList = Calc.ProductEqualMatch(VendorList, Product);
+
+            List<CPEItem>? VersionList = new List<CPEItem>();
+            List<CPEItem> ItemList = new List<CPEItem>();
             if (ProductList == null)
             {
                 ProductList = Calc.ProductContainsMatch(VendorList, Product);
                 if (ProductList == null)
                 {
-                    ProductList = Calc.ProductPartEqualMatch(VendorList, Product);
+
+                    ProductList = Calc.ProductPartContainsMultipleMatch(VendorList, Product);
                     if (ProductList == null)
                     {
-                        ProductList = Calc.ProductPartEqualMatch(VendorList, ProductNaked);
+                        ProductList = Calc.ProductPartContainsMultipleMatch(VendorList, ProductNaked);
                         if (ProductList == null)
                         {
-                            ProductList = Calc.ProductPartContainsAllMatch(VendorList, Product);
+                            ProductList = Calc.ProductPartEqualMatch(VendorList, Product);
                             if (ProductList == null)
                             {
-                                ProductList = Calc.ProductPartContainsAllMatch(VendorList, ProductNaked);
+                                ProductList = Calc.ProductPartEqualMatch(VendorList, ProductNaked);
                                 if (ProductList == null)
                                 {
                                     ProductList = Calc.ProductPartContainsAnyMatch(VendorList, ProductNaked);
@@ -281,10 +144,9 @@ namespace CPEApi.Controllers
                                         ProductList = Calc.ProductPartContainsAnyMatch(VendorList, Product);
                                         if (ProductList == null)
                                         {
-                                            return NotFound();
+                                            return SaveToDB(ItemList, Part, Vendor, Product, Version, Method);
                                         }
                                     }
-
                                 }
                             }
                         }
@@ -292,157 +154,165 @@ namespace CPEApi.Controllers
                 }
             }
 
-            IEnumerable<Cpe>? VersionList;
-            List<CPEItem> ItemList;
-            if (Version != null)
+            if (Version != null && ProductList.Any())
             {
-                VersionList = Calc.CompareVersions(ProductList, Version);
-                ItemList = Calc.OrderInverseAlgorithmProduct(VersionList, Product);
+
+                VersionList = Calc.OrderInverseAlgorithmProduct(ProductList, Product);
+                ItemList = Calc.CompareVersions(VersionList, Version);
             }
             else
             {
-               ItemList = Calc.OrderInverseAlgorithmProduct(ProductList, Product);
+                ItemList = Calc.OrderInverseAlgorithmProduct(ProductList, Product);
             }
-            Calc.evaluateListProduct(Product, ItemList);
-            return ItemList;
+            Console.WriteLine("END" + DateTime.Now.ToString("mm-ss"));
+            return SaveToDB(ItemList, Part, Vendor, Product, Version, Method);
         }
 
 
         [HttpGet("FindByParamToken")]
-        public ActionResult<IEnumerable<CPEItem>> FindCPEItemsToken(string? Part, string? Vendor, string Product, string? Version)
+        public ActionResult FindCPEItemsToken(string? Part, string? Vendor, string Product, string? Version, int vthreshhold = 25, int pthreshhold = 50)
         {
-            IEnumerable<Tuple< int, string>> vendorTuple;
-            if (_sqlcontext.Cpes == null)
+            string Method = "LEVEN";
+            Part = (Part != null) ? Part.ToLower().Replace("_", " ") : null;
+            Vendor = (Vendor != null) ? Vendor.ToLower().Replace("_", " ") : null;
+            Product = Product.ToLower().Replace("_", " ");
+            Version = (Version != null) ? Version.ToLower().Replace("_", " ") : null;
+            if (!_sqlcontext.Anfragens.Where(x => x.Part == Part && x.Vendor == Vendor && x.Product == Product && x.Version == Version).Any())
             {
-                return NotFound();
-            }
-            IEnumerable<Cpe>? VendorList;
-
-            int vthreshhold = 25;
-            vendorTuple = Calc.TopTokenRatio(Vendor, vthreshhold, CalculationMethods.parameters.VendorParam);
-            //if (Vendor != null)
-            //{
-               
-            //    //while (VendorList == null)
-            //    //{
-            //    //    vthreshhold -= 5;
-            //    //    VendorList = Calc.VendorTokenRatio(Vendor, vthreshhold);
-            //    //}
-            //    //VendorList = Calc.VendorTokenRatio(Vendor, vthreshhold - 10);
-            //}
-            //else
-            //{
-            //    Console.WriteLine("NO Vendor Found");
-            //    VendorList = _sqlcontext.Cpes;
-            //}
-            foreach (var b in vendorTuple)
-            {
-                Console.WriteLine("Vendor similarity( " + b.Item2 + b.Item1 + "): ");
-            }
-            var vendorArray = vendorTuple.Select(o => o.Item2);
-            VendorList = _sqlcontext.Cpes.Where(o => vendorArray.Contains(o.Vendor));
-            if (Part != null) { VendorList = VendorList.Where(s => s.Part == Part); }
-            Product = Product.ToLower();
-            IEnumerable<Cpe>? ProductList;
-            string ProductNaked = Regex.Replace(Product, @"[^\p{L}\p{N}]+", " ");
-            int pthreshhold = 0;
-            ProductList = Calc.ProductTokenRatio(VendorList, Product, pthreshhold);
-            while (ProductList == null)
-            {
-                pthreshhold -= 5;
-                ProductList = Calc.ProductTokenRatio(VendorList, Product, pthreshhold);
-            }
-            //ProductList = Calc.ProductTokenRatio(VendorList, Product, pthreshhold - 10);
-            
-
-            IEnumerable<Cpe>? VersionList;
-            VersionList = Calc.CompareVersions(ProductList, Version);
-            List<CPEItem> ItemList = Calc.OrderInverseAlgorithmProduct(VersionList, Product);
-            Calc.evaluateListProduct(Product, ItemList);
-            return ItemList;
-        }
-        [HttpGet("TitleTioken")]
-        public ActionResult<IEnumerable<CPEItem>> TitleToken(string? Title)
-        {
-            if (_sqlcontext.Cpes == null)
-            {
-                return NotFound();
-            }
-            IEnumerable<Cpe>? TitleList;
-            if (Title != null)
-            {
-                int vthreshhold = 100;
-                TitleList = Calc.TitleTokenRatio(Title, vthreshhold);
-                while (TitleList == null)
-                {
-                    vthreshhold -= 5;
-                    TitleList = Calc.TitleTokenRatio(Title, vthreshhold);
-                }
-                TitleList = Calc.TitleTokenRatio(Title, vthreshhold - 10);
+                _sqlcontext.Add(new Anfragen { Part = Part, Vendor = Vendor, Product = Product, Version = Version, Created = DateTime.Now });
+                _sqlcontext.SaveChanges();
             }
             else
             {
-                Console.WriteLine("NO Vendor Found");
-                TitleList = _sqlcontext.Cpes;
+                if (_sqlcontext.Antworten2s.Where(o => o.Typ == _sqlcontext.Typs.Where(x => x.Name == Method).FirstOrDefault().Id && o.AnfrageId == _sqlcontext.Anfragens.Where(x => x.Part == Part && x.Vendor == Vendor && x.Product == Product && x.Version == Version).FirstOrDefault().Id).Any())
+                {
+                    return Ok();
+                }
             }
-            List<CPEItem> ItemList = Calc.OrderInverseAlgorithmTitle(TitleList, Title);
-            Calc.evaluateListProduct(Title, ItemList);
-            return ItemList;
-        }
-        //[HttpGet("FindLeven/{Product}")]
-        //public ActionResult<IEnumerable<Cpe>> FindLeven(string? Product)
-        //{
-        //    if (_sqlcontext.Cpes == null || Product == null || Product == string.Empty)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var res = Calc.recursiveLower(Product, 100);
-        //    if (res != null)
-        //    {
-        //        res.OrderByDescending(x => FuzzySharp.Fuzz.WeightedRatio(x.Product, Product.Replace(" ", "_").ToLower()));
-        //        Calc.evaluateList(Product, res.Select(x => new CPEItem
-        //        {
-        //            CpeName = x.Name,
-        //            CpeTitle = x.Title,
-        //            Part = x.Part,
-        //            Vendor = x.Vendor,
-        //            Edition = x.Edition,
-        //            Target_hw = x.TargetHw,
-        //            Target_sw = x.TargetSw,
-        //            Language = x.Language,
-        //            Id = x.Id,
-        //            Other = x.Other,
-        //            Product = x.Product,
-        //            Sw_edition = x.SwEdition,
-        //            Update = x.Update,
-        //            Version = x.Version,
-        //            QueryScore = 1
-        //        }).ToList());
-        //        return res.ToList();
-        //    }
-        //    else
-        //    {
-        //        return NotFound();
-        //    }
-        //}
-        // GET: api/CPEItems/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Cpe>> GetCPEItem(int id)
-        {
+            Console.WriteLine("START" + DateTime.Now.ToString("mm-ss"));
+            IEnumerable<Tuple<int, string>> vendorTuple;
             if (_sqlcontext.Cpes == null)
             {
-                return NotFound();
+                return Ok();
             }
-            var cPEItem = await _sqlcontext.Cpes.FindAsync(id);
-
-            if (cPEItem == null)
+            IEnumerable<Cpe>? VendorList;
+            IEnumerable<Cpe>? ProductList;
+            IEnumerable<Tuple<int, string>> productTuple;
+            if (Vendor != null)
             {
-                return NotFound();
-            }
+                vendorTuple = Calc.TopTokenRatio(Vendor, vthreshhold, CalculationMethods.parameters.VendorParam);
 
-            return cPEItem;
+                foreach (var b in vendorTuple)
+                {
+                    Console.WriteLine("Vendor similarity( " + b.Item2 + " -- " + b.Item1 + "): ");
+                }
+
+                var vendorArray = vendorTuple.Select(o => o.Item2).ToArray();
+
+                productTuple = Calc.TopTokenRatio(Product, pthreshhold, CalculationMethods.parameters.ProductParam);
+
+                var ProductArray = productTuple.Select(o => o.Item2).ToArray();
+                ProductList = _sqlcontext.Cpes.Where(o => ProductArray.Contains(o.Product) && vendorArray.Contains(o.Vendor)).ToList();
+            }
+            else
+            {
+
+                productTuple = Calc.TopTokenRatio(Product, pthreshhold, CalculationMethods.parameters.ProductParam);
+
+                var ProductArray = productTuple.Select(o => o.Item2).ToArray();
+                ProductList = _sqlcontext.Cpes.Where(o => ProductArray.Contains(o.Product)).ToList();
+            }
+            foreach (var b in productTuple)
+            {
+                Console.WriteLine("Product similarity( " + b.Item2 + " -- " + b.Item1 + "): ");
+            }
+            if (Part != null) { ProductList = ProductList.Where(s => s.Part == Part); }
+            List<CPEItem> VersionList;
+            List<CPEItem> ItemList;
+            if (Version != null && ProductList.Any())
+            {
+                VersionList = Calc.OrderInverseAlgorithmProduct(ProductList, Product);
+                ItemList = Calc.CompareVersions(VersionList, Version);
+            }
+            else
+            {
+                ItemList = Calc.OrderInverseAlgorithmProduct(ProductList, Product);
+            }
+            Console.WriteLine("END" + DateTime.Now.ToString("mm-ss"));
+            return SaveToDB(ItemList, Part, Vendor, Product, Version, Method);
         }
 
 
+        [HttpGet("FindByParamIterate")]
+        public ActionResult FindCPEItemsIterate(string? Part, string? Vendor, string Product, string? Version)
+        {
+            string Method = "CONTROL";
+            var Part1 = (Part != null) ? Part.ToLower().Replace("_", " ") : null;
+            var Vendor1 = (Vendor != null) ? Vendor.ToLower().Replace("_", " ") : null;
+            var Product1 = Product.ToLower().Replace("_", " ");
+            var Version1 = (Version != null) ? Version.ToLower().Replace("_", " ") : null;
+            if (!_sqlcontext.Anfragens.Where(x => x.Part == Part1 && x.Vendor == Vendor1 && x.Product == Product1 && x.Version == Version1).Any())
+            {
+                _sqlcontext.Add(new Anfragen { Part = Part1, Vendor = Vendor1, Product = Product1, Version = Version1, Created = DateTime.Now });
+                _sqlcontext.SaveChanges();
+            }
+            else
+            {
+                if (_sqlcontext.Antworten2s.Where(o => o.Typ == _sqlcontext.Typs.Where(x => x.Name == Method).FirstOrDefault().Id && o.AnfrageId == _sqlcontext.Anfragens.Where(x => x.Part == Part1 && x.Vendor == Vendor1 && x.Product == Product1 && x.Version == Version1).FirstOrDefault().Id).Any())
+                {
+                    return Ok();
+                }
+            }
+            Console.WriteLine("START" + DateTime.Now.ToString("mm-ss"));
+            Part = (Part != null) ? (Part.Contains(" ")) ? Part.ToLower().Replace(" ", "_") : Part.ToLower() : null;
+            Vendor = (Vendor != null) ? (Vendor.Contains(" ")) ? Vendor.ToLower().Replace(" ", "_") : Vendor.ToLower() : null;
+            Product = (Product.Contains(" ")) ? Product.ToLower().Replace(" ", "_") : Product.ToLower();
+            Version = (Version != null) ? (Version.Contains(" ")) ? Version.ToLower().Replace(" ", "_") : Version.ToLower() : null;
+            var disjointProduct = new Tuple<CalculationMethods.Element, CalculationMethods.ComparisonResult>(CalculationMethods.Element.Product, CalculationMethods.ComparisonResult.Disjoint);
+            var disjointVendor = new Tuple<CalculationMethods.Element, CalculationMethods.ComparisonResult>(CalculationMethods.Element.Vendor, CalculationMethods.ComparisonResult.Disjoint);
+            var CPEs = _sqlcontext.Cpes.ToList().Where(x => !Calc.Compare_WFNs(x, new Cpe { Part = Part ?? "ANY", Vendor = Vendor ?? "ANY", Product = Product, Version = Version ?? "ANY" }).Contains(disjointProduct) && !Calc.Compare_WFNs(x, new Cpe { Part = Part ?? "ANY", Vendor = Vendor ?? "ANY", Product = Product, Version = Version ?? "ANY" }).Contains(disjointVendor));
+
+            List<CPEItem> ItemList = Calc.OrderInverseAlgorithmProduct(CPEs.AsEnumerable(), Product);
+            if (Version != null && ItemList.Any())
+            { ItemList = Calc.CompareVersions(ItemList.AsEnumerable(), Version); }      
+            Console.WriteLine("END" + DateTime.Now.ToString("mm-ss"));
+            return SaveToDB(ItemList, Part1, Vendor1, Product1, Version1, Method);
+
+        }
+        private ActionResult SaveToDB(List<CPEItem> ItemList, string? Part, string? Vendor, string Product, string? Version, string Method)
+        {
+            int counter = 0;
+            foreach (var item in ItemList)
+            {
+                _sqlcontext.Antworten2s.AddAsync(new Antworten2
+                {
+                    AnfrageId = _sqlcontext.Anfragens.Where(x => x.Part == Part && x.Vendor == Vendor && x.Product == Product && x.Version == Version).FirstOrDefault().Id,
+                    Typ = _sqlcontext.Typs.Where(x => x.Name == Method).FirstOrDefault().Id,
+                    Cpeid = item.Id,
+                    ResultNr = counter,
+                    LocalScore = item.LocalQueryScore,
+                    GlobalScore = item.GlobalQueryScore,
+                    Created = DateTime.Now
+                });
+                counter++;
+                if (counter > 5)
+                {
+                    _sqlcontext.SaveChanges();
+                    return Ok();
+                }
+            }
+            _sqlcontext.Antworten2s.AddAsync(new Antworten2
+            {
+                AnfrageId = _sqlcontext.Anfragens.Where(x => x.Part == Part && x.Vendor == Vendor && x.Product == Product && x.Version == Version).FirstOrDefault().Id,
+                Typ = _sqlcontext.Typs.Where(x => x.Name == Method).FirstOrDefault().Id,
+                Cpeid = null,
+                ResultNr = counter,
+                LocalScore = null,
+                GlobalScore = null,
+                Created = DateTime.Now
+            });
+            _sqlcontext.SaveChanges();
+            return Ok();
+        }
     }
 }

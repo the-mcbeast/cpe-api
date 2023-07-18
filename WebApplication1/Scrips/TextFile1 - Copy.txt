@@ -1,0 +1,54 @@
+
+    stateDiagram-v2
+    [*] --> Vendor : VendorString
+    Vendor --> Product : ProductString
+    Product -->OrderByScoring
+    OrderByScoring --> returnResults
+    returnResults --> [*]
+
+     
+    state Vendor {
+        state VendorEqual <<choice>>
+     state VendorContains <<choice>>
+      state ContainsVendor <<choice>>
+        [*] -->  VendorEqual
+        
+    VendorEqual --> VendorContains: VendorEqual returns nothing
+    VendorEqual --> TakeFilteredVendors : VendorEqual != null
+
+    VendorContains --> ContainsVendor: VendorContains  == null
+    VendorContains --> TakeFilteredVendors : VendorContains != null
+
+     ContainsVendor --> TakeAllCPEVendors: ContainsVendor  == null
+    ContainsVendor -->TakeFilteredVendors : ContainsVendor != null
+    TakeFilteredVendors --> [*]
+
+    TakeAllCPEVendors --> [*]
+
+    }
+    
+    state Product {
+        state ProductEqualMatch <<choice>>
+     state ProductContainsMatch <<choice>>
+      state ProductPartContainsMultipleMatch <<choice>>
+      state ProductPartEqualMatch <<choice>>
+       state ProductPartContainsAnyMatch <<choice>>
+
+        [*] --> ProductEqualMatch 
+    ProductEqualMatch --> ProductContainsMatch: ProductEqualMatch  == null
+    ProductEqualMatch --> TakeFilteredProducts : ProductEqualMatch != null
+
+    ProductContainsMatch --> ProductPartContainsMultipleMatch: ProductContainsMatch  == null
+    ProductContainsMatch --> TakeFilteredProducts : ProductContainsMatch != null
+
+     ProductPartContainsMultipleMatch --> ProductPartEqualMatch: ProductPartContainsMultipleMatch  == null
+    ProductPartContainsMultipleMatch --> TakeFilteredProducts : ProductPartContainsMultipleMatch != null
+
+     ProductPartEqualMatch --> ProductPartContainsAnyMatch: ProductPartEqualMatch  == null
+    ProductPartEqualMatch --> TakeFilteredProducts : ProductPartEqualMatch != null
+
+     ProductPartContainsAnyMatch --> ReturnNoSuccess: ProductPartContainsAnyMatch  == null
+    ProductPartContainsAnyMatch --> TakeFilteredProducts : ProductPartContainsAnyMatch != null       
+       TakeFilteredProducts --> [*]
+        ReturnNoSuccess --> [*]
+    }

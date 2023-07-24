@@ -1,13 +1,14 @@
 
     stateDiagram-v2
-    [*] --> Vendor : VendorString
-    Vendor --> Product : ProductString
-    Product -->OrderByScoring
-    OrderByScoring --> returnResults
+    [*] --> VendorFilter : VendorString
+    VendorFilter --> ProductFilter : ProductString
+    ProductFilter -->OrderByScoring
+     OrderByScoring -->  Versionmatching 
+      Versionmatching --> returnResults
     returnResults --> [*]
 
      
-    state Vendor {
+    state VendorFilter {
         state VendorEqual <<choice>>
      state VendorContains <<choice>>
       state ContainsVendor <<choice>>
@@ -18,7 +19,8 @@
 
     VendorContains --> ContainsVendor: VendorContains  == null
     VendorContains --> TakeFilteredVendors : VendorContains != null
-
+TakeFilteredVendors: return filtered on Vendors
+TakeAllCPEVendors: return all Vendors
      ContainsVendor --> TakeAllCPEVendors: ContainsVendor  == null
     ContainsVendor -->TakeFilteredVendors : ContainsVendor != null
     TakeFilteredVendors --> [*]
@@ -27,7 +29,7 @@
 
     }
     
-    state Product {
+    state ProductFilter {
         state ProductEqualMatch <<choice>>
      state ProductContainsMatch <<choice>>
       state ProductPartContainsMultipleMatch <<choice>>
@@ -46,7 +48,8 @@
 
      ProductPartEqualMatch --> ProductPartContainsAnyMatch: ProductPartEqualMatch  == null
     ProductPartEqualMatch --> TakeFilteredProducts : ProductPartEqualMatch != null
-
+TakeFilteredProducts: return filtered on Products
+ReturnNoSuccess: return no Success
      ProductPartContainsAnyMatch --> ReturnNoSuccess: ProductPartContainsAnyMatch  == null
     ProductPartContainsAnyMatch --> TakeFilteredProducts : ProductPartContainsAnyMatch != null       
        TakeFilteredProducts --> [*]

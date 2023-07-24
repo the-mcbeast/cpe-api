@@ -10,11 +10,13 @@ stateDiagram-v2
         Compare(Vendor) --> join_state
       join_state --> TakeAllNonDisjunktinBoth : TakeAllNonDisjunktinBoth
             TakeAllNonDisjunktinBoth --> OrderByScoring : CPEs
-      
-      TakeAllNonDisjunktinBoth --> returnNoSuccess : EmptyList
-      returnNoSuccess --> [*]
-      OrderByScoring --> returnCPEs
-      returnCPEs --> [*]
+      ReturnNoSuccess: return no Success
+      TakeAllNonDisjunktinBoth --> ReturnNoSuccess : EmptyList
+      ReturnNoSuccess --> [*]
+      returnResults: return CPEs
+      OrderByScoring --> Versionmatching 
+      Versionmatching --> returnResults
+      returnResults --> [*]
 
 
 

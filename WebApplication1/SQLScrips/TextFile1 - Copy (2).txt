@@ -12,8 +12,8 @@ stateDiagram-v2
         TopTokenRatio(Vendor) --> join_state : VendorArray
       join_state --> TakeAllContainingBoth :CPEs with Vendor in Vendorarray and Product in ProductArray
       
-      TakeAllContainingBoth --> returnCPEs : CPEs
-      
-      TakeAllContainingBoth --> returnNoSuccess : EmptyList
-      returnNoSuccess --> [*]
-      returnCPEs --> [*]
+      TakeAllContainingBoth --> Versionmatching : CPEs
+      ret : return no Success
+      TakeAllContainingBoth --> ret : EmptyList
+      ret --> [*]
+      Versionmatching --> [*]

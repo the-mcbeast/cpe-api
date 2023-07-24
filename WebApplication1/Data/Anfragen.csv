@@ -1,0 +1,101 @@
+﻿Id;Part;Vendor;Product;Version;Created
+32;NULL;microsoft;windows server;2012 r2 std x64 windows 2012 r2 server s;2023-07-08 02:58:32.763
+33;NULL;suse;linux enterprise server;12;2023-07-08 02:58:33.843
+34;NULL;microsoft;windows;7 ult sp1 x64;2023-07-08 02:58:34.857
+35;NULL;microsoft;windows server;2016 std;2023-07-08 02:58:35.517
+36;NULL;oracle;oracle client;11.2.0;2023-07-08 02:58:36.057
+37;NULL;microsoft;windows server;2012 std;2023-07-08 02:59:09.070
+38;NULL;oracle;oracle client;12.2.0.1.0;2023-07-08 02:59:09.803
+39;NULL;oracle;oracle olap api;11.2.0.4.0;2023-07-08 02:59:43.613
+40;NULL;red hat;linux enterprise server;7.7;2023-07-08 03:00:08.980
+41;NULL;microsoft;windows server;2016;2023-07-08 03:00:14.120
+42;NULL;debian;"""linux """;8.6;2023-07-08 03:00:14.660
+43;NULL;microsoft;windows;10 pro x64;2023-07-08 03:00:32.160
+44;NULL;microsoft;windows server;2012 r2 std windows 2012 r2 server stand;2023-07-08 03:00:32.713
+45;NULL;microsoft;windows;10 ent ltsb x64;2023-07-08 03:00:33.317
+46;NULL;oracle;oracle olap rdbms files;11.2.0.4.0;2023-07-08 03:00:33.963
+47;NULL;microsoft;windows server;2008 r2 std x64 sp1;2023-07-08 03:00:53.423
+48;NULL;oracle;oracle client;11.2.0.2.0 runtime;2023-07-08 03:00:54.060
+49;NULL;debian;"""linux """;8.8;2023-07-08 03:01:24.803
+50;NULL;microsoft;windows server;windows  server  edition sp1 sp1;2023-07-08 03:01:41.717
+51;NULL;debian;"""linux """;8.10;2023-07-08 03:01:42.310
+52;NULL;oracle;oracle olap api;11.2.0;2023-07-08 03:01:59.263
+53;NULL;microsoft;windows server;windows 8 workstation  windows 8 worksta;2023-07-08 03:02:23.597
+54;NULL;oracle;oracle olap api;11.2.0.2.0;2023-07-08 03:02:24.160
+55;NULL;microsoft;windows server;2012 r2 std x64;2023-07-08 03:02:48.347
+56;NULL;microsoft;sql server;3.5 sp2;2023-07-08 03:02:48.883
+57;NULL;microsoft;windows server;2012 r2 std;2023-07-08 03:02:50.140
+58;NULL;microsoft;windows server;windows 7 workstation  sp1 sp1;2023-07-08 03:02:50.697
+59;NULL;debian;"""linux """;8.7;2023-07-08 03:02:51.240
+60;NULL;microsoft;sql server;3.5 sp1;2023-07-08 03:03:08.277
+61;NULL;oracle;oracle database;11.2.0;2023-07-08 03:03:09.493
+62;NULL;oracle;oracle database;11.2.0.4.0;2023-07-08 03:03:10.533
+63;NULL;microsoft;windows server;"""windows 2016 server standard editionstd """;2023-07-08 03:03:11.630
+64;NULL;microsoft;sql server;2016;2023-07-08 03:03:12.220
+65;NULL;suse;linux enterprise server;12.4;2023-07-08 03:03:13.547
+66;NULL;oracle;oracle client;11.2.0.4.0;2023-07-08 03:03:14.467
+67;NULL;microsoft;sql server;(64bit);2023-07-08 03:03:46.227
+68;NULL;oracle;oracle client;11.2.0.2.0;2023-07-08 03:03:47.760
+69;NULL;suse;"""linux """;11.3;2023-07-08 03:04:18.673
+70;NULL;oracle;oracle olap rdbms files;11.2.0.2.0;2023-07-08 03:04:35.580
+71;NULL;microsoft;windows server;2012 r2  windows 2012 r2 serverdatacente;2023-07-08 03:04:55.957
+72;NULL;microsoft;windows server;windows 7 workstation x64 sp1 x64 sp1;2023-07-08 03:04:56.617
+73;NULL;microsoft;sql server;2017;2023-07-08 03:04:57.233
+74;NULL;microsoft;windows;7 ent sp1 x64;2023-07-08 03:04:58.607
+75;NULL;microsoft;windows server;windows 2016 server ltsb edition windows;2023-07-08 03:04:59.330
+76;NULL;microsoft;windows server;windows  server  edition windows  server;2023-07-08 03:05:00.033
+77;NULL;suse;linux enterprise server;11;2023-07-08 03:05:00.543
+78;NULL;microsoft;sql server;4.0 sp1;2023-07-08 03:05:01.517
+79;NULL;microsoft;windows server;2012 r2 std x64 sp2;2023-07-08 03:05:02.777
+80;NULL;microsoft;windows server;2012 r2 std x64 windows 2012 r2 serverst;2023-07-08 03:05:03.303
+81;NULL;microsoft;sql server;2014;2023-07-08 03:05:04.097
+82;NULL;microsoft;windows server;windows 7 workstation  x64 sp1 x64 sp1;2023-07-08 03:05:05.570
+83;NULL;microsoft (bbs);sharepoint server;4.10;2023-07-08 03:05:06.170
+84;NULL;microsoft;windows server;2012 r2  x64 windows 2012 r2 server data;2023-07-08 03:05:16.067
+85;NULL;oracle;oracle database;11.2.0.2.0;2023-07-08 03:05:16.720
+86;NULL;oracle;oracle olap;11.2.0.2.0;2023-07-08 03:05:17.900
+87;NULL;microsoft;windows server;2003 std sp2;2023-07-08 03:05:36.230
+88;NULL;oracle;oracle olap api;12.2.0;2023-07-08 03:05:36.827
+89;NULL;microsoft;sql server;2014 sp1 x64;2023-07-08 03:06:00.960
+90;NULL;oracle;oracle client;10.2.0;2023-07-08 03:06:02.593
+91;NULL;microsoft;sql server;3.5 sp2 x64;2023-07-08 03:06:34.197
+92;NULL;debian;"""linux """;8.9;2023-07-08 03:06:35.370
+93;NULL;oracle;oracle olap rdbms files;12.2.0;2023-07-08 03:06:52.583
+94;NULL;microsoft;sql server;2014 sp3 x64;2023-07-08 03:07:13.003
+95;NULL;oracle;oracle real application testing;11.2.0.2.0;2023-07-08 03:07:14.503
+96;NULL;microsoft;sql server;2008 r2 sp1 x64;2023-07-08 03:07:32.020
+97;NULL;oracle;oracle database vault;11.2.0.2.0;2023-07-08 03:07:33.417
+98;NULL;oracle;oracle partitioning;11.2.0.2.0;2023-07-08 03:07:50.973
+99;NULL;oracle;oracle spatial;11.2.0.2.0;2023-07-08 03:08:09.043
+100;NULL;microsoft;windows server;2008 r2 ent sp1;2023-07-08 03:08:26.910
+101;NULL;microsoft;windows server;2012 r2 std windows 2012 r2 serverstanda;2023-07-08 03:08:28.030
+102;NULL;microsoft;windows server;windows  server  edition x64 sp1 x64 sp1;2023-07-08 03:08:28.900
+103;NULL;oracle;oracle advanced security;11.2.0.2.0;2023-07-08 03:08:29.643
+104;NULL;microsoft;windows server;2016 ent;2023-07-08 03:08:47.197
+105;NULL;microsoft;windows server;2008 r2 std sp1;2023-07-08 03:08:47.857
+106;NULL;oracle;oracle olap api;10.2.0;2023-07-08 03:08:48.523
+107;NULL;oracle;oracle olap rdbms files;12.1.0;2023-07-08 03:09:13.127
+108;NULL;oracle;oracle client;12.2.0;2023-07-08 03:09:33.970
+109;NULL;oracle;oracle olap patch;9.2.0;2023-07-08 03:10:05.533
+110;NULL;microsoft;windows;7 ent sp1;2023-07-08 03:10:24.220
+111;NULL;oracle;oracle database;12.2.0.1.0;2023-07-08 03:10:24.983
+112;NULL;oracle;oracle database;12.1.0;2023-07-08 03:10:26.787
+113;NULL;oracle;oracle olap api;12.1.0.2.0;2023-07-08 03:10:27.937
+114;NULL;microsoft;windows;7 ult sp1;2023-07-08 03:10:52.583
+115;NULL;microsoft;sql server;2014 sp2;2023-07-08 03:10:53.643
+116;NULL;oracle;oracle database;9.2.0.5.0;2023-07-08 03:10:55.013
+117;NULL;microsoft;windows server;2008 ent sp2;2023-07-08 03:10:56.157
+118;NULL;microsoft;windows server;windows 2019 server standard edition x64;2023-07-08 03:10:56.797
+119;NULL;oracle;oracle database;210;2023-07-08 03:10:57.467
+120;NULL;microsoft;windows server;2008 r2 ent x64 windows 2008 r2 server e;2023-07-08 03:10:58.627
+121;NULL;oracle;oracle database;12.2.0;2023-07-08 03:11:00.330
+122;NULL;oracle;oracle olap rdbms files;11.2.0;2023-07-08 03:11:01.397
+123;NULL;microsoft;windows server;2008 r2 ent x64 sp1;2023-07-08 03:11:22.403
+124;NULL;oracle;oracle label security;11.2.0.2.0;2023-07-08 03:11:23.540
+125;NULL;microsoft;windows server;2008 std sp2;2023-07-08 03:11:40.830
+126;NULL;microsoft;windows server;2003 ent sp2;2023-07-08 03:11:41.617
+127;NULL;oracle;oracle database;8.1.7.4.1;2023-07-08 03:11:42.577
+128;NULL;oracle;oracle olap api;9.2.0;2023-07-08 03:11:43.967
+129;NULL;oracle;oracle olap cwm lite;9.2.0;2023-07-08 03:12:08.343
+130;NULL;oracle;oracle data mining;11.2.0.2.0;2023-07-08 03:12:25.937
+131;NULL;oracle;oracle database;<generic>;2023-07-08 03:12:44.300
